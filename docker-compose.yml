@@ -1,0 +1,40 @@
+# Please refer https://aka.ms/HTTPSinContainer on how to setup an https developer certificate for your ASP.NET Core service.
+
+version: '3.4'
+
+services:
+  reservation-sqlite:
+    image: reservation:sqlite
+    build:
+      dockerfile: ./Reservation/Dockerfile
+    ports:
+      - 5171:5171
+    volumes:
+      - ./Reservation.db:/app/Reservation.db:rw
+    # environment:
+    #   - DefaultConnection=Server=mysql;Database=Reservation.Party.grad;User=root;Password=P@ssw0rd;
+    # depends_on:
+    #   - mysql
+  reservation:
+    image: reservation
+    build:
+      dockerfile: ./Reservation/Dockerfile
+    ports:
+      - 5170:5171
+    environment:
+      - DefaultConnection=Server=mysql;Database=Reservation.Party.grad;User=root;Password=P@ssw0rd;
+    depends_on:
+      - mysql
+
+  # sqlserver:
+  #   image: mcr.microsoft.com/mssql/server:2019-latest
+  #   environment:
+  #     SA_PASSWORD: 'P@ssw0rd'
+  #     ACCEPT_EULA: 'Y'
+  #   ports:
+  #     - 1433:1433
+
+  mysql:
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: P@ssw0rd
